@@ -52,6 +52,8 @@ const baseDraw=draw;draw=function(){baseDraw();if(loaded)renderAnnotations(false
 
 // Non-destructive annotations use normalized source-video coordinates.
 function beginLiveAnnotations(){liveMarks=[];pendingMark=null;cursorTrail=null;cursorPoint=null}
+function finishLiveAnnotations(length){const all=[...liveMarks];if(pendingMark)all.push(pendingMark);if(cursorTrail)all.push(cursorTrail);return structuredClone(all).map(m=>({...m,start:C.clamp(m.start,0,length),end:C.clamp(m.end,0,length)})).filter(m=>m.end>m.start)}
+function restoreLiveAnnotations(recorded){marks=recorded.map(m=>({...m,end:Math.min(m.end,duration)})).filter(m=>m.end>m.start);renderMarkList();dirty()}
 function markTime(live){return live?Math.max(0,((pausedAt||Date.now())-recordStart-pauseTotal)/1000):video.currentTime}
 function paintCursor(x,y,shape,color,size,alpha=1){ctx.save();ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.fillStyle=color;ctx.lineWidth=Math.max(2,size*.09);ctx.beginPath();if(shape==='dot'){ctx.arc(x,y,size*.25,0,Math.PI*2);ctx.fill()}else if(shape==='cross'){ctx.moveTo(x-size/2,y);ctx.lineTo(x+size/2,y);ctx.moveTo(x,y-size/2);ctx.lineTo(x,y+size/2);ctx.stroke()}else if(shape==='arrow'){ctx.moveTo(x,y);ctx.lineTo(x+size*.2,y+size);ctx.lineTo(x+size*.42,y+size*.66);ctx.lineTo(x+size*.78,y+size*.7);ctx.closePath();ctx.fill();ctx.strokeStyle='white';ctx.lineWidth=1;ctx.stroke()}else{ctx.arc(x,y,size*.45,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=alpha*.16;ctx.fill()}ctx.restore()}
 function paintMark(m,t){if(t<m.start||t>m.end)return;let points=m.points;if(!points?.length)return;const w=canvas.width,h=canvas.height;
