@@ -43,3 +43,4 @@
 瀏覽器驗證包含合成影音匯入、片段分割、字幕樣式與游標設定持久化、IndexedDB 恢復、專案備份、MP4 匯出解碼，以及實際 Whisper 語音辨識。實體攝影機、麥克風與螢幕分享須由使用者授權後測試。
 
 第三方資料： [Transformers.js](https://huggingface.co/docs/transformers.js/v3.0.0/en/api/pipelines)、[Whisper 模型](https://huggingface.co/Xenova/whisper-base)、[OpenCC.js](https://github.com/nk2028/opencc-js)。
+`/local-tests` 的例外操作驗證涵蓋損毀影片匯入後保留專案、字幕時間與片段範圍檢查、連續取消後重新匯出、停止未完成的預覽、清除游標軌跡及專案恢復。匯出時切到背景會取消本次匯出並保留編輯，避免輸出凍結影像。
