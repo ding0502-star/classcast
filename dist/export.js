@@ -2,7 +2,7 @@
 let exportCancelReason='';
 function cancelExport(reason='已取消匯出，編輯內容仍保留。'){exportCancel=true;exportCancelReason=reason}
 $('cancelExport').onclick=()=>cancelExport();
-document.addEventListener('visibilitychange',()=>{if(document.hidden&&exporting)cancelExport('切換分頁時已取消匯出，避免產生凍結畫面。請保持課映在前景後重新匯出。')});
+document.addEventListener('visibilitychange',()=>{if(document.hidden&&exporting&&!window.backgroundExport)cancelExport('切換分頁時已取消匯出，避免產生凍結畫面。請保持課映在前景後重新匯出。')});
 async function waitForExportRange(end,error){
   return new Promise((resolve,reject)=>{
     let previous=video.currentTime,lastProgress=Date.now();

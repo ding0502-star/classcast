@@ -1,3 +1,5 @@
 tests/*.wav
 *.tar.gz
 .sites-runtime/
+.build/
+*.tgz
