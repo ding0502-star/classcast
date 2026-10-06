@@ -6,7 +6,7 @@ canvas.width=1920;canvas.height=1080;
 const clock=t=>{t=Math.max(0,Number(t)||0);const h=Math.floor(t/3600),m=Math.floor(t%3600/60),s=Math.floor(t%60);return(h?String(h).padStart(2,'0')+':':'')+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0')};
 const notify=message=>{$('toast').textContent=message;$('toast').hidden=false;clearTimeout(notify.timer);notify.timer=setTimeout(()=>$('toast').hidden=true,6000)};
 const totalDuration=()=>clips.reduce((n,c)=>n+c.end-c.start,0);
-const busy=()=>exporting||!!recorder||recordPreparing||loading||window.studioBusy||window.projectBusy;
+const busy=()=>ClassCastOperations.busy||exporting||!!recorder||recordPreparing||loading||window.studioBusy||window.projectBusy;
 function tab(name){document.querySelectorAll('.tabcontent').forEach(x=>x.hidden=x.id!==name);document.querySelectorAll('[data-tab]').forEach(x=>{const selected=x.dataset.tab===name;x.classList.toggle('selected',selected);x.setAttribute('aria-selected',selected)})}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>tab(b.dataset.tab));
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=()=>{if(busy())return;mode=b.dataset.mode;document.querySelectorAll('[data-mode]').forEach(x=>x.classList.toggle('active',x===b));$('systemAudio').disabled=mode==='camera'});
@@ -17,7 +17,7 @@ $('importBtn').onclick=chooseFile;$('emptyImport').onclick=chooseFile;
 $('file').onchange=async e=>{const file=e.target.files[0];if(!file)return;await loadVideo(file,file.name);e.target.value=''};
 function eventOnce(target,name,timeout=15000){return new Promise((resolve,reject)=>{let timer=setTimeout(()=>done(new Error('影片處理逾時，請換一個檔案再試。')),timeout);function done(error){clearTimeout(timer);target.removeEventListener(name,ok);target.removeEventListener('error',fail);error?reject(error):resolve()}function ok(){done()}function fail(){done(new Error('此瀏覽器無法讀取這個影片格式。'))}target.addEventListener(name,ok,{once:true});target.addEventListener('error',fail,{once:true})})}
 async function seekTo(t){if(Math.abs(video.currentTime-t)<.03&&video.readyState>=2)return;const wait=eventOnce(video,'seeked');video.currentTime=t;await wait}
-async function loadVideo(blob,name,knownDuration){
+async function decodeVideo(blob,name,knownDuration){
   if(exporting||loading)return false;
   loading=true;video.pause();
   const old={url:sourceUrl,time:video.currentTime,loaded,state:$('stateLabel').textContent};

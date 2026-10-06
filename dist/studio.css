@@ -2,3 +2,4 @@
 
 body.custom-cursor #canvas:not(.cursor-overlay){cursor:var(--custom-cursor)!important}
 .reviewtext{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-size:13px;max-height:240px;overflow:auto;line-height:1.7}#preflight,#recoveryDialog{max-width:760px;width:90%}#recoveryList{max-height:55vh;overflow:auto}#micLevel{width:65%;height:20px}#export .exportrow{flex-wrap:wrap}#exportChecks{flex-basis:100%}#captureSource,#captureAudio{line-height:1.7}
+#compatibilityDialog{max-width:760px;width:90%}#compatibilityList .item{line-height:1.7;font-size:14px}#exportStorageHint{flex-basis:100%;margin:4px 0}
