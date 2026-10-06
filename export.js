@@ -1,6 +1,6 @@
 /* Always release capture tracks and audio connections, including cancellation. */
 let exportCancelReason='';
-function cancelExport(reason='已取消匯出，編輯內容仍保留。'){exportCancel=true;exportCancelReason=reason}
+function cancelExport(reason='已取消匯出，編輯內容仍保留。'){exportCancel=true;exportCancelReason=reason;globalThis.classCastExportJobs?.cancel()}
 $('cancelExport').onclick=()=>cancelExport();
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&exporting&&!window.backgroundExport)cancelExport('切換分頁時已取消匯出，避免產生凍結畫面。請保持課映在前景後重新匯出。')});
 async function waitForExportRange(end,error){
@@ -14,11 +14,12 @@ async function waitForExportRange(end,error){
     },20);
   });
 }
-$('exportBtn').onclick=async()=>{
+async function exportRealtime(){
   if(!allowEdit())return;
   if(!clips.length)return notify('請至少加入一個保留片段。');
   if(document.hidden)return notify('請將課映切到前景後再開始匯出。');
   if(!types.length||!canvas.captureStream)return notify('此瀏覽器不支援影片匯出，請使用桌面版 Chrome 或 Edge。');
+  const operation=ClassCastOperations.begin('export-realtime');
   stopPreview();
   exporting=true;exportCancel=false;exportCancelReason='';
   const previousTime=video.currentTime,previousMuted=video.muted,previousRate=video.playbackRate;
@@ -64,6 +65,6 @@ $('exportBtn').onclick=async()=>{
     outputStream?.getTracks().forEach(t=>t.stop());
     video.muted=previousMuted;video.playbackRate=previousRate;window.exportClipIndex=null;
     await seekTo(previousTime).catch(()=>{});
-    exporting=false;document.body.classList.remove('busy');$('exportBtn').disabled=false;$('playBtn').disabled=false;$('seek').disabled=false;$('cancelExport').hidden=true;$('stateLabel').textContent='可開始編輯';
+    exporting=false;document.body.classList.remove('busy');$('exportBtn').disabled=false;$('playBtn').disabled=false;$('seek').disabled=false;$('cancelExport').hidden=true;$('stateLabel').textContent='可開始編輯';operation.end();
   }
 };
